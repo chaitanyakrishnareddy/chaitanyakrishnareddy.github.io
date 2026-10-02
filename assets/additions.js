@@ -1,5 +1,30 @@
 // --- Portfolio additions (not part of the Base44 build) ---
 (function(){
+
+  // 4. The stock hero background is very dark (and dimmed to 30%% opacity).
+  //    Swap in a brighter generated backdrop and lift the dimming.
+  var heroDone = false;
+  function swapHero(){
+    if (heroDone) return true;
+    var divs = document.querySelectorAll('div');
+    for (var i = 0; i < divs.length; i++){
+      var el = divs[i];
+      var bg = el.style && el.style.backgroundImage;
+      if (bg && bg.indexOf('bb2995e24_generated_910a285c') !== -1){
+        heroDone = true;
+        (function(target){
+          fetch('assets/hero-bg.b64.txt').then(function(r){ return r.text(); }).then(function(t){
+            target.style.backgroundImage = 'url(data:image/jpeg;base64,' + t.trim() + ')';
+          }).catch(function(){});
+        })(el);
+        var par = el.parentElement;
+        if (par) par.style.opacity = '0.55';
+        return true;
+      }
+    }
+    return false;
+  }
+
   // 3. Footer "Reference Site" link points back to this same site (self-link
   //    left over from the Base44 build) -- point it at LinkedIn instead.
   function patchFooter(){
@@ -56,6 +81,6 @@
   }
   var tries = 0;
   var iv = setInterval(function(){
-    var done1 = hook(); var done2 = patchFooter(); if ((done1 && done2) || ++tries > 60) clearInterval(iv);
+    var done1 = hook(); var done2 = patchFooter(); var done3 = swapHero(); if ((done1 && done2 && done3) || ++tries > 60) clearInterval(iv);
   }, 500);
 })();
